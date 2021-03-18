@@ -122,7 +122,7 @@ namespace BlockchainAssignment
             }
 
 
-            Transaction transaction = new Transaction(textBox2.Text, textBox6.Text, ulong.Parse(textBox4.Text), ulong.Parse(textBox5.Text));        // Create transaction from input text blocks
+            Transaction transaction = new Transaction(textBox2.Text, textBox3.Text, textBox6.Text, ulong.Parse(textBox4.Text), ulong.Parse(textBox5.Text));        // Create transaction from input text blocks
             richTextBox1.Text += transaction.GetInfo();             // Show info about the transaction
             blockchain.AddTransaction(transaction);               // Add transaction to the blockchain, where it'll sit in the pending queue
         }
@@ -157,6 +157,7 @@ namespace BlockchainAssignment
                 radioButton3.Checked||
                 radioButton4.Checked)){
                 richTextBox1.Text += "\n[ERR] Missing mining choice";
+                return;
             }
 
             var t = Task.Run(() =>
@@ -260,6 +261,48 @@ namespace BlockchainAssignment
             else if (blockchain.CheckBlocksMerkle()) richTextBox1.Text += "\nTransactions have been tampered with\n";
             else if (blockchain.CheckTransactionSignature()) richTextBox1.Text += "\nTransaction signatures have been tampered with\n";
             else richTextBox1.Text += "\nBlocks are coherent\n";
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            if (String.IsNullOrEmpty(textBox2.Text))
+            {
+                richTextBox1.Text += "\n[ERR] Missing public key\n";            // Report error
+                return;
+            }
+            else if (!(radioButton1.Checked ||
+              radioButton2.Checked ||
+              radioButton3.Checked ||
+              radioButton4.Checked))
+            {
+                richTextBox1.Text += "\n[ERR] Missing mining choice";
+                return;
+            }
+
+
+            var t = Task.Run(() =>
+            {
+                if (radioButton1.Checked)
+                {
+                    // Generate new block button function
+
+                    blockchain.AddBrokenBlock(textBox2.Text, 1);         // Add block to blockchain from pending transactions, takes public key for reward
+
+                }
+                else if (radioButton2.Checked)
+                {
+                    blockchain.AddBrokenBlock(textBox2.Text, 2);
+                }
+                else if (radioButton3.Checked)
+                {
+                    blockchain.AddBrokenBlock(textBox2.Text, 3);
+                }
+                else if (radioButton4.Checked)
+                {
+                    blockchain.AddBrokenBlock(textBox2.Text, 4);
+                }
+            });
+
         }
     }
 }

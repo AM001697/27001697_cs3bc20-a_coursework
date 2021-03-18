@@ -21,6 +21,19 @@ namespace BlockchainAssignment
         public ulong Fee;                  // Fee to use blockchain, deducted from sender
 
 
+        public Transaction(String SenderAddress, String privKey, String RecipientAddress, ulong Amount, ulong Fee)
+        {
+            this.SenderAddress = SenderAddress;                     // Allocate all the classes variables
+            this.RecipientAddress = RecipientAddress;
+            this.Amount = Amount;
+            this.Fee = Fee;
+            this.Timestamp = DateTime.Now;
+
+            this.Hash = this.CreateHash();
+
+            this.Signature = Wallet.Wallet.CreateSignature(this.SenderAddress, privKey, this.Hash);
+        }
+
         public Transaction(String SenderAddress, String RecipientAddress, ulong Amount, ulong Fee)
         {
             this.SenderAddress = SenderAddress;                     // Allocate all the classes variables
@@ -31,7 +44,7 @@ namespace BlockchainAssignment
 
             this.Hash = this.CreateHash();
 
-            this.Signature = Wallet.Wallet.CreateSignature(this.SenderAddress, this.RecipientAddress, this.Hash);
+            this.Signature = Wallet.Wallet.CreateSignature(this.SenderAddress, RecipientAddress, this.Hash);
         }
 
         /// <summary>
@@ -97,13 +110,13 @@ namespace BlockchainAssignment
         /// <returns>boolean, true if the transactions hashes do not match </returns>
         public bool CheckTransactionSignature()
         {
-            if (!Wallet.Wallet.ValidateSignature(SenderAddress, Hash, Signature))
+            if (Wallet.Wallet.ValidateSignature(SenderAddress, Hash, Signature))
             {
-                return false;
+                return true;
             }
             else
             {
-                return true;
+                return false;
             }
         }
     }
